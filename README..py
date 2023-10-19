@@ -57,13 +57,14 @@ def update_or_add_xml(xml_string, parent_path, tag, new_value, namespaces):
     if element is not None:
         element.text = new_value
     else:
-        new_element = ET.SubElement(parent_element, ET.QName(namespaces['dc'], tag))
+        # Extract the prefix and local_name from the tag
+        prefix, local_name = tag.split(':')
+        new_element = ET.SubElement(parent_element, ET.QName(namespaces[prefix], local_name))
         new_element.text = new_value
 
     return ET.tostring(root, encoding='utf-8', method='xml').decode('utf-8')
 
 
-
 long_parent_path = './ex:apple/ex:longParent/ex:longChild1/ex:longChild2'
-updated_xml = update_or_add_xml(xml_string, long_parent_path, 'dc:targetElement1', 'New Value1', namespaces)
+updated_xml = update_or_add_xml(xml_string, long_parent_path, 'dc:targetElement2', 'New Value1', namespaces)
 print(updated_xml)
