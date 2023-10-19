@@ -15,10 +15,12 @@ def extract_namespaces(xpath):
 def create_or_update_xpath(xml_string, xpath, value):
     root = etree.fromstring(xml_string)
     namespaces = extract_namespaces(xpath)
+
     for prefix in namespaces.keys():
         ns = root.nsmap.get(prefix)
         if ns is not None:
             namespaces[prefix] = ns
+
     existing_element = root.xpath(xpath, namespaces=namespaces)
 
     if existing_element:
