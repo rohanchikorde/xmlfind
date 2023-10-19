@@ -44,8 +44,10 @@ namespaces = {
 
 def update_or_add_xml(xml_string, parent_path, tag, new_value, namespaces):
     root = ET.fromstring(xml_string)
-    ET.register_namespace('ex', namespaces['ex'])
-    ET.register_namespace('dc', namespaces['dc'])
+
+    # Register namespaces dynamically
+    for prefix, uri in namespaces.items():
+        ET.register_namespace(prefix, uri)
 
     parent_element = root.find(parent_path, namespaces)
     if parent_element is None:
@@ -59,6 +61,7 @@ def update_or_add_xml(xml_string, parent_path, tag, new_value, namespaces):
         new_element.text = new_value
 
     return ET.tostring(root, encoding='utf-8', method='xml').decode('utf-8')
+
 
 
 long_parent_path = './ex:apple/ex:longParent/ex:longChild1/ex:longChild2'
