@@ -1,63 +1,35 @@
-from lxml import etree
+import xml.etree.ElementTree as ET
 
-
-def extract_namespaces(xpath):
-    parts = xpath.split('/')
-    namespaces = {}
-    for part in parts:
-        if ':' in part:
-            prefix, _ = part.split(':')
-            if prefix not in namespaces:
-                namespaces[prefix] = None
-    return namespaces
-
-
-def create_or_update_xpath(xml_string, xpath, value):
-    root = etree.fromstring(xml_string)
-    namespaces = extract_namespaces(xpath)
-
-    for prefix in namespaces.keys():
-        ns = root.nsmap.get(prefix)
-        if ns is not None:
-            namespaces[prefix] = ns
-
-    existing_element = root.xpath(xpath, namespaces=namespaces)
-
-    if existing_element:
-        existing_element[0].text = value
-    else:
-        xpath_parts = xpath.strip('/').split('/')
-        current_element = root
-
-        for part in xpath_parts:
-            prefixed_part = part.split(':')[1] if ':' in part else part
-            next_element = current_element.find(prefixed_part, namespaces=namespaces)
-
-            if next_element is None:
-                next_element = etree.SubElement(current_element, prefixed_part)
-
-            current_element = next_element
-
-        current_element.text = value
-
-    return etree.tostring(root, pretty_print=True).decode('utf-8')
-
-
-# Example usage
 xml_string = '''
-<ns:catalog xmlns:ns="http://example.com/namespace">
-    <ns:book>
-        <ns:chapter>
-            <ns:sentence>
-                <ns:word>existing_value</ns:word>
-            </ns:sentence>
-        </ns:chapter>
-    </ns:book>
-</ns:catalog>
+<catalog>
+   <book id="bk101">
+      <author>Gambardella, Matthew</author>
+      <title>XML Developer's Guide</title>
+      <genre>Computer</genre>
+      <price>44.95</price>
+      <publish_date>2000-10-01</publish_date>
+      <description>An in-depth look at creating applications
+      with XML.</description>
+   </book>
+</catalog>
 '''
 
-xpath = '/ns:catalog/ns:book/ns:chapter/ns:sentence/ns:word'
-value = 'pranita'
+def update_or_add_xml(xml_string, parent_path, tag, new_value):
+    root = ET.fromstring(xml_string)
 
-new_xml_string = create_or_update_xpath(xml_string, xpath, value)
-print(new_xml_string)
+    parent_element = root.find(parent_path)
+    if parent_element is None:
+        raise ValueError(f"Parent element not found for path '{parent_path}'")
+
+    element = parent_element.find(tag)
+    if element is not None:
+        element.text = new_value
+    else:
+        new_element = ET.SubElement(parent_element, tag)
+        new_element.text = new_value
+
+    return ET.tostring(root, encoding='utf-8', method='xml').decode('utf-8')
+
+
+updated_xml = update_or_add_xml(xml_string, './book/author', 'rohan1', 'Elemalue')
+print(updated_xml)
