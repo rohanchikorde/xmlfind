@@ -3,14 +3,30 @@ import xml.etree.ElementTree as ET
 xml_string = '''
 <catalog>
    <book id="bk101">
-      <author>Gambardella, Matthew</author>
+      <author>
+         <a>
+            <b>
+            </b>
+         </a> 
+      </author>
+        
       <title>XML Developer's Guide</title>
       <genre>Computer</genre>
       <price>44.95</price>
       <publish_date>2000-10-01</publish_date>
-      <description>An in-depth look at creating applications
+      <description>An in-depth look at creating applications 
       with XML.</description>
-   </book>
+   </book>   
+   <apple id="bk102">
+      <author>Ralls, Kim</author>
+      <title>Midnight Rain</title>
+      <genre>Fantasy</genre>
+      <price>5.95</price>
+      <publish_date>2000-12-16</publish_date>
+      <description>A former architect battles corporate zombies, 
+      an evil sorceress, and her own childhood to become queen 
+      of the world.</description>
+   </apple>
 </catalog>
 '''
 
@@ -31,5 +47,5 @@ def update_or_add_xml(xml_string, parent_path, tag, new_value):
     return ET.tostring(root, encoding='utf-8', method='xml').decode('utf-8')
 
 
-updated_xml = update_or_add_xml(xml_string, './book/author', 'rohan1', 'Elemalue')
+updated_xml = update_or_add_xml(xml_string, './book/author/a/b', 'c', 'qef')
 print(updated_xml)
