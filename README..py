@@ -44,6 +44,8 @@ namespaces = {
 
 def update_or_add_xml(xml_string, parent_path, tag, new_value, namespaces):
     root = ET.fromstring(xml_string)
+    ET.register_namespace('ex', namespaces['ex'])
+    ET.register_namespace('dc', namespaces['dc'])
 
     parent_element = root.find(parent_path, namespaces)
     if parent_element is None:
@@ -53,13 +55,12 @@ def update_or_add_xml(xml_string, parent_path, tag, new_value, namespaces):
     if element is not None:
         element.text = new_value
     else:
-        new_element = ET.SubElement(parent_element, tag)
+        new_element = ET.SubElement(parent_element, ET.QName(namespaces['dc'], tag))
         new_element.text = new_value
-        new_element.set('xmlns:dc', namespaces['dc'])
 
     return ET.tostring(root, encoding='utf-8', method='xml').decode('utf-8')
 
 
 long_parent_path = './ex:apple/ex:longParent/ex:longChild1/ex:longChild2'
-updated_xml = update_or_add_xml(xml_string, long_parent_path, 'dc:targetElement', 'New Value', namespaces)
+updated_xml = update_or_add_xml(xml_string, long_parent_path, 'dc:targetElement1', 'New Value1', namespaces)
 print(updated_xml)
